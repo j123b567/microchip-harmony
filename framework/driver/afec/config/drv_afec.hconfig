@@ -1,0 +1,147 @@
+menu "AFEC"
+    depends on HAVE_AFEC
+
+enum  AFEC_DRV_MODE_ENUM
+    "STATIC" || "DYNAMIC"
+	
+config DRV_ADC_TYPE_AFEC
+    bool
+	default y if HAVE_AFEC
+	
+config USE_DRV_AFEC
+    depends on HAVE_AFEC
+    bool "Use AFEC Driver?"
+    default n
+    ---help---
+    Dynamic implementation for PIC32C
+    ---endhelp---
+
+enum AFEC_MODULE_ID
+    "AFEC_ID_0"
+    || "AFEC_ID_1"
+
+enum AFEC_ENUM_RESOLUTION
+    "12 Bit"
+    || "13 Bit"
+    || "14 Bit"
+    || "15 Bit"
+    || "16 Bit"
+    
+enum AFEC_ENUM_SIGN_MODE
+    "All Unsigned"
+    || "All Signed"
+    || "SingleEnded-Unsigned, Differential-Signed"
+    || "SingleEnded-Signed, Differential-Unsigned"
+
+enum DRV_AFEC_BIAS_CURRENT
+    "Configure for AFEC sampling frequency less than 500kHz"
+    || "Configure for AFEC sampling frequency upto 1MHz"
+    || "Configure for AFEC sampling frequency higher than 1MHz"
+    
+enum DRV_AFEC_STARTUP
+    "0 AFEC Clock Cycles"
+    || "8 AFEC Clock Cycles"
+    || "16 AFEC Clock Cycles"
+    || "24 AFEC Clock Cycles"
+    || "64 AFEC Clock Cycles"
+    || "80 AFEC Clock Cycles"
+    || "96 AFEC Clock Cycles"
+    || "112 AFEC Clock Cycles"
+    || "512 AFEC Clock Cycles"
+    || "576 AFEC Clock Cycles"
+    || "640 AFEC Clock Cycles"
+    || "704 AFEC Clock Cycles"
+    || "768 AFEC Clock Cycles"
+    || "832 AFEC Clock Cycles"
+    || "896 AFEC Clock Cycles"
+    || "960 AFEC Clock Cycles"
+
+enum DRV_AFEC_HARDWARE_TRIG_SOURCE
+    "DRV_AFEC_HARDWARE_TRIG_SOURCE_AFEC_ADTRG"
+    || "DRV_AFEC_HARDWARE_TRIG_SOURCE_TCC_0_3"
+    || "DRV_AFEC_HARDWARE_TRIG_SOURCE_TCC_1_4"
+    || "DRV_AFEC_HARDWARE_TRIG_SOURCE_TCC_2_5"
+    || "DRV_AFEC_HARDWARE_TRIG_SOURCE_PWM_EVENT_LINE_0"
+    || "DRV_AFEC_HARDWARE_TRIG_SOURCE_PWM_EVENT_LINE_1"
+    || "DRV_AFEC_HARDWARE_TRIG_SOURCE_ANALOG_COMPARATOR"
+
+enum DRV_AFEC_CHANNEL_GAIN
+    "DRV_AFEC_CHANNEL_GAIN1"
+    || "DRV_AFEC_CHANNEL_GAIN2"
+    || "DRV_AFEC_CHANNEL_GAIN4"
+
+menu "Driver Configuration"
+	depends on USE_DRV_AFEC
+	depends on DRV_ADC_TYPE_AFEC
+    
+config DRV_AFEC_DRIVER_MODE
+    string "Driver Implementation"
+    depends on USE_DRV_AFEC
+	depends on DRV_ADC_TYPE_AFEC
+    range ADC_DRV_MODE_ENUM
+    default "DYNAMIC"
+	persistent
+	---help---
+    IDH_HTML_ADC_Driver_Library
+    ---endhelp---
+
+config DRV_AFEC_INCLUDE_DRIVER
+    bool
+	depends on USE_DRV_AFEC
+    depends on DRV_ADC_TYPE_AFEC
+    depends on DRV_AFEC_DRIVER_MODE = "DYNAMIC"
+    select DRIVER
+    default y
+
+config DRV_AFEC_INTERRUPT_MODE
+    bool "Interrupt Mode"
+	depends on USE_DRV_AFEC
+    depends on DRV_ADC_TYPE_AFEC
+	select USE_SYS_INT_NEEDED
+	persistent
+	default n
+    ---help---
+    Sets ADC Driver to Interrupt Mode
+    ---endhelp---
+
+config DRV_AFEC_INSTANCE_NUMBER
+    int "Number of AFEC Instances"
+	depends on USE_DRV_AFEC
+	depends on DRV_ADC_TYPE_AFEC
+    range 1 AFEC_NUMBER_OF_MODULES
+    default 1
+    ---help---
+    IDH_HTML_DRV_AFEC_INSTANCE_NUMBER
+    ---endhelp---
+
+config DRV_AFEC_CLIENTS_NUMBER
+    int "Number of AFEC Clients"
+	depends on USE_DRV_AFEC
+	depends on DRV_ADC_TYPE_AFEC
+    default 2
+    range 1 4
+    ---help---
+    IDH_HTML_DRV_AFEC_CLIENTS_NUMBER
+    ---endhelp---
+    
+endmenu
+
+source "$HARMONY_VERSION_PATH/framework/driver/afec/config/drv_afec_idx.ftl" 2 instances
+
+endmenu
+
+ifblock DRV_ADC_TYPE_AFEC
+ifblock DRV_AFEC_DRIVER_MODE = "DYNAMIC"
+
+add "<#include \"/framework/driver/afec/templates/drv_afec.h.ftl\">" to list SYSTEM_CONFIG_H_DRIVER_CONFIGURATION
+add "<#include \"/framework/driver/afec/templates/drv_afec_init_data.c.ftl\">"  to list SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA
+add "<#include \"/framework/driver/afec/templates/drv_afec_init_functions.c.ftl\">"  to list SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS
+
+file DRV_AFEC_C "$HARMONY_VERSION_PATH/framework/driver/afec/src/dynamic/drv_afec.c" to "$PROJECT_SOURCE_FILES/framework/driver/afec/src/dynamic/drv_afec.c"
+file DRV_AFEC_H "$HARMONY_VERSION_PATH/framework/driver/afec/drv_afec.h" to "$PROJECT_HEADER_FILES/framework/driver/afec/drv_afec.h"
+file DRV_AFEC_DEF_H "$HARMONY_VERSION_PATH/framework/driver/afec/src/drv_afec_local.h" to "$PROJECT_HEADER_FILES/framework/driver/afec/src/drv_afec_local.h"
+
+endif
+endif
+
+

@@ -1,0 +1,6 @@
+# file: devices_cortex_m7.hconfig
+
+#source "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m7/$DEVICE.hconfig"
+
+file DEVICES_CORTEX_M7_H "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m7/devices_cortex_m7.h" to "$PROJECT_HEADER_FILES/framework/arch/arm/devices_cortex_m7/devices_cortex_m7.h"
+file CMSIS_CM7_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_cm7.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_cm7.h"

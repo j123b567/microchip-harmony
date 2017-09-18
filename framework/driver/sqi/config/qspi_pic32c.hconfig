@@ -1,0 +1,124 @@
+menu "SQI"
+  depends on HAVE_SQI
+
+  enum DRV_SQI_MODE
+    "DYNAMIC"
+
+  enum DRV_QSPI_SPI_OPERATION_MODE
+    "DRV_SQI_SPI_MODE_0"
+    || "DRV_SQI_SPI_MODE_3"
+
+  config DRV_SQI_NEEDED
+    bool
+
+  config USE_DRV_SQI
+    depends on HAVE_SQI
+    bool "Use SQI Driver?"
+	default n if !DRV_SQI_NEEDED
+    default y if DRV_SQI_NEEDED
+    select DRIVER
+    select USE_SYS_INT_NEEDED
+    select SYS_QUEUE
+	select USE_SYS_DMA_NEEDED
+	set SYS_CLK_PMC_ID_QSPI optionally to y if USE_DRV_SQI
+
+  config DRV_QSPI_PERIPHERAL_ID
+    string
+    depends on USE_DRV_SQI
+    range QSPI_MODULE_ID
+    default "QSPI_ID_0"
+
+  config DRV_QSPI_INSTANCES_NUMBER
+    int "Number of driver instances"
+    depends on USE_DRV_SQI
+    default 1
+    persistent
+	
+  config DRV_QSPI_CLIENTS_NUMBER
+    int "Number of driver Clients"
+    depends on USE_DRV_SQI
+    default 1
+
+  config DRV_QSPI_ELEMENTS_PER_QUEUE
+    int "Number of driver buffer objects"
+    depends on USE_DRV_SQI
+    range 1 10
+    default 5
+
+  config DRV_QSPI_CLK_FREQ
+    int "SQI clock frequency(Hz)"
+    depends on USE_DRV_SQI
+    default 10000
+
+  config DRV_QSPI_SPI_OP_MODE
+    string "SPI mode of operation"
+    depends on USE_DRV_SQI
+    range DRV_QSPI_SPI_OPERATION_MODE
+    default "DRV_SQI_SPI_MODE_0"
+
+  config DRV_QSPI_INTERRUPT_MODE
+    bool "Interrupt driven"
+    depends on USE_DRV_SQI
+    default y
+
+  config DRV_QSPI_INTERRUPT_PRIORITY
+    string "Interrupt Priority"
+    depends on USE_DRV_SQI && DRV_QSPI_INTERRUPT_MODE
+    range INT_PRIORITY_LEVEL_PIC32C
+    default "INT_PRIORITY_LEVEL3"
+    
+  config DRV_QSPI_INTERRUPT_SOURCE
+    string "Interrupt Source"
+    depends on USE_DRV_SQI && DRV_QSPI_INTERRUPT_MODE
+    default "QSPI_IRQn"	
+	
+  config DRV_QSPI_INT_IPL
+    string
+    depends on USE_DRV_SQI && DRV_QSPI_INTERRUPT_MODE
+    default "0" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_DISABLE_INTERRUPT"
+    default "1" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL1"
+    default "2" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL2"
+    default "3" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL3"
+    default "4" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL4"
+    default "5" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL5"
+    default "6" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL6"
+    default "7" if DRV_QSPI_INTERRUPT_PRIORITY = "INT_PRIORITY_LEVEL7"   
+
+  config DRV_QSPI_INTERRUPT_HANDLER_NAME
+    string "Interrupt handler name"
+    depends on USE_DRV_SQI && DRV_QSPI_INTERRUPT_MODE
+    default "QSPI_Handler"
+
+endmenu
+
+ifblock USE_DRV_SQI
+  add "<#include \"/framework/driver/sqi/config/drv_qspi.c.ftl\">"  to list SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA
+  add "<#include \"/framework/driver/sqi/config/drv_qspi_init.c.ftl\">"  to list SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS
+  add "<#include \"/framework/driver/sqi/config/drv_qspi_tasks.c.ftl\">"  to list SYSTEM_TASKS_C_CALL_DRIVER_TASKS
+
+  add "<#include \"/framework/driver/sqi/config/drv_qspi.h.ftl\">"  to list SYSTEM_CONFIG_H_GLOBAL_INCLUDES
+  template DRV_SQI_INIT_H "$HARMONY_VERSION_PATH/framework/driver/sqi/templates/drv_qspi_init.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/driver/sqi/drv_sqi_init.h"
+  file DRV_QSPI_H "$HARMONY_VERSION_PATH/framework/driver/sqi/drv_sqi.h" to "$PROJECT_HEADER_FILES/framework/driver/sqi/drv_sqi.h"
+  template DRV_QSPI_LOCAL_H "$HARMONY_VERSION_PATH/framework/driver/sqi/templates/drv_qspi_local.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/driver/sqi/src/drv_qspi_local.h"
+  file DRV_QSPI_C "$HARMONY_VERSION_PATH/framework/driver/sqi/src/dynamic/drv_qspi.c" to "$PROJECT_SOURCE_FILES/framework/driver/sqi/src/dynamic/drv_qspi.c"
+  
+  ifblock DRV_QSPI_INTERRUPT_MODE
+    # Add QSPI Interrupt Handler to vector table
+    # list format is "vectors structure member name" "function symbol name"
+    add "pfnQSPI_Handler ${CONFIG_DRV_QSPI_INTERRUPT_HANDLER_NAME}" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+	add "<#include \"/framework/driver/sqi/templates/drv_qspi_int.c.ftl\">"  to list SYSTEM_INTERRUPT_C_VECTORS
+  endif 
+  
+  ifblock !DRV_QSPI_INTERRUPT_MODE
+    # Add QSPI Interrupt Safeguard Handler to vector table
+    # list format is "vectors structure member name" "function symbol name"
+    add "pfnQSPI_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+  endif
+endif
+
+ifblock !(USE_DRV_SQI)
+  # Add QSPI Interrupt Safeguard Handler to vector table
+  # list format is "vectors structure member name" "function symbol name"
+  add "pfnQSPI_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+endif
+

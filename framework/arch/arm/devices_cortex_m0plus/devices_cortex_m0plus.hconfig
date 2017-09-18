@@ -1,0 +1,8 @@
+# file: cortex_m0plus.hconfig
+
+#source "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m0plus/$DEVICE.hconfig"
+
+file DEVICES_CORTEX_M0PLUS_H "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m0plus/devices_cortex_m0plus.h" to "$PROJECT_HEADER_FILES/framework/arch/arm/devices_cortex_m0plus/devices_cortex_m0plus.h"
+file CMSIS_CM0PLUS_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_cm0plus.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_cm0plus.h"
+file CMSIS_ARMV8MBL_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_armv8mbl.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_armv8mbl.h"
+file CMSIS_CM23_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_cm23.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_cm23.h"

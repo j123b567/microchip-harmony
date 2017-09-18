@@ -1,0 +1,20 @@
+# file: arm_fpu.hconfig
+
+menu "ARM Cortex-M FPU"
+  depends on DEVICE_HAS_FPU && PROJECT_USES_FPU
+
+  config DEVICE_HAS_FPU_FPV4_SP_D16
+    depends on ARCH_ARM_CORTEX_M4 && PROJECT_USES_FPU
+    bool "fpv4-sp-d16 (Cortex-M3/M4)"
+    persistent
+
+  config DEVICE_HAS_FPU_FPV5_SP_D16
+    depends on ARCH_ARM_CORTEX_M7 && PROJECT_USES_FPU
+    bool "fpv5-sp-d16 (Cortex-M7)"
+    persistent
+
+  config DEVICE_HAS_FPU_FPV5_D16
+    depends on ARCH_ARM_CORTEX_M7 && PROJECT_USES_FPU
+    bool "fpv5-d16 (Cortex-M7)"
+    persistent
+endmenu

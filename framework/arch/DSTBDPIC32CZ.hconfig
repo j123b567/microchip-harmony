@@ -1,0 +1,12 @@
+# file: DSTBDPIC32CZ.hconfig
+
+# config for the whole product family
+config ARCH_DSTBDPIC32CZ
+  bool
+  select ARCH_ARM_CORTEX_M7
+  select DEVICE_HAS_MPU
+  select DEVICE_HAS_FPU
+  select DEVICE_HAS_FPU_FPV5_D16 if PROJECT_USES_FPU
+  select DEVICE_HAS_CACHE
+  select DEVICE_HAS_CORE_TIMER
+  select DEVICE_HAS_TCM

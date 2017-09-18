@@ -1,0 +1,8 @@
+# file: devices_cortex_m4.hconfig
+
+#source "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m4/$DEVICE.hconfig"
+
+file DEVICES_CORTEX_M4_H "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m4/devices_cortex_m4.h" to "$PROJECT_HEADER_FILES/framework/arch/arm/devices_cortex_m4/devices_cortex_m4.h"
+file CMSIS_ARMV8MML_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_armv8mml.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_armv8mml.h"
+file CMSIS_CM33_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_cm33.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_cm33.h"
+file CMSIS_CM4_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/core_cm4.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/core_cm4.h"

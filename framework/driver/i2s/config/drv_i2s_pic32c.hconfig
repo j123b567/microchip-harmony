@@ -1,0 +1,214 @@
+# file drv_i2s_pic32c.hconfig
+
+menu "I2S"
+    depends on HAVE_I2S
+
+    enum DRV_I2S_IMPLEMENTATION
+        "DYNAMIC"
+
+    enum DRV_I2S_INDEX
+        "DRV_I2S_INDEX_0"
+        || "DRV_I2S_INDEX_1"
+        || "DRV_I2S_INDEX_2"
+
+    enum DRV_I2S_MODULE_ID
+        "SSC_ID_0"
+        || "I2SC_ID_0"
+        || "I2SC_ID_1"
+
+    enum DRV_I2S_SSC_RX_CLK_SEL
+        "DRV_I2S_SSC_RX_DIVIDED_CLOCK"
+        || "DRV_I2S_SSC_RX_TK_SIGNAL"
+        || "DRV_I2S_SSC_RX_RK_PIN"
+
+    enum DRV_I2S_SSC_RX_CLK_OUTPUT
+        "I2S_SSC_NONE_RK_PIN_AS_INPUT"
+        || "I2S_SSC_CONTINUOUS_RX_CLK_OUTPUT"
+        || "I2S_SSC_CLK_ONLY_DURING_DATA_TRANSFER"
+
+    enum DRV_I2S_SSC_RX_CLK_INV
+        "I2S_SSC_RX_FALLING_RISING_EDGE"
+        || "I2S_SSC_RX_RISING_FALLING_EDGE"
+
+    enum DRV_I2S_SSC_RX_CLK_GATE
+        "I2S_SSC_RX_CLK_CONTINUOUS"
+        || "I2S_SSC_RX_CLK_EN_RF_LOW"
+        || "I2S_SSC_RX_CLK_EN_RF_HIGH"
+
+    enum DRV_I2S_SSC_RX_START_SEL
+        "I2S_SSC_RX_CONTINUOUS"
+        || "I2S_SSC_RX_TRANSMIT"
+        || "I2S_SSC_RX_RF_LOW"
+        || "I2S_SSC_RX_RF_HIGH"
+        || "I2S_SSC_RX_RF_FALLING"
+        || "I2S_SSC_RX_RF_RISING"
+        || "I2S_SSC_RX_RF_LEVEL"
+        || "I2S_SSC_RX_RF_EDGE"
+        || "I2S_SSC_RX_COMP_0"
+
+    enum DRV_I2S_SSC_RX_LOOP_MODE
+        "I2S_SSC_NORMAL_MODE"
+        || "I2S_SSC_LOOP_MODE"
+
+    enum DRV_I2S_SSC_RX_MSB_FIRST
+        "I2S_SSC_RX_LSB_SAMPLED_FIRST"
+        || "I2S_SSC_RX_MSB_SAMPLED_FIRST"
+
+    enum DRV_I2S_SSC_RX_FS_OUT_SEL
+        "I2S_SSC_RX_FS_OUTPUT_NONE"
+        || "I2S_SSC_RX_FS_OUTPUT_NEGATIVE"
+        || "I2S_SSC_RX_FS_OUTPUT_POSITIVE"
+        || "I2S_SSC_RX_FS_OUTPUT_LOW"
+        || "I2S_SSC_RX_FS_OUTPUT_HIGH"
+        || "I2S_SSC_RX_FS_OUTPUT_TOGGLING"
+
+    enum DRV_I2S_SSC_RX_FS_EDGE_DETECTION
+        "I2S_SSC_RX_FS_EDGE_POSITIVE"
+        || "I2S_SSC_RX_FS_EDGE_NEGATIVE"
+
+    enum DRV_I2S_SSC_TX_CLK_SEL
+        "DRV_I2S_SSC_TX_DIVIDED_CLOCK"
+        || "DRV_I2S_SSC_TX_TK_SIGNAL"
+        || "DRV_I2S_SSC_TX_RK_PIN"
+
+    enum DRV_I2S_SSC_TX_CLK_OUTPUT
+        "I2S_SSC_NONE_TK_PIN_AS_INPUT"
+        || "I2S_SSC_TX_CONTINUOUS_CLK_OUTPUT"
+        || "I2S_SSC_TX_CLK_ONLY_DURING_DATA_TRANSFER"
+
+    enum DRV_I2S_SSC_TX_CLK_INV
+        "I2S_SSC_TX_FALLING_RISING_EDGE"
+        || "I2S_SSC_TX_RISING_FALLING_EDGE"
+
+    enum DRV_I2S_SSC_TX_CLK_GATE
+        "I2S_SSC_TX_CLK_CONTINUOUS"
+        || "I2S_SSC_TX_CLK_EN_RF_LOW"
+        || "I2S_SSC_TX_CLK_EN_RF_HIGH"
+
+    enum DRV_I2S_SSC_TX_START_SEL
+        "I2S_SSC_TX_CONTINUOUS"
+        || "I2S_SSC_TX_TRANSMIT"
+        || "I2S_SSC_TX_TF_LOW"
+        || "I2S_SSC_TX_TF_HIGH"
+        || "I2S_SSC_TX_TF_FALLING"
+        || "I2S_SSC_TX_TF_RISING"
+        || "I2S_SSC_TX_TF_LEVEL"
+        || "I2S_SSC_TX_TF_EDGE"
+
+    enum DRV_I2S_SSC_TX_DEFAULT_DATA
+        "I2S_SSC_TX_TD_OUTPUT_ZEROS"
+        || "I2S_SSC_TX_TD_OUTPUT_ONES"
+
+    enum DRV_I2S_SSC_TX_MSB_FIRST
+        "I2S_SSC_TX_LSB_SAMPLED_FIRST"
+        || "I2S_SSC_TX_MSB_SAMPLED_FIRST"
+
+    enum DRV_I2S_SSC_TX_FS_OUT_SEL
+        "I2S_SSC_TX_FS_OUTPUT_NONE"
+        || "I2S_SSC_TX_FS_OUTPUT_NEGATIVE"
+        || "I2S_SSC_TX_FS_OUTPUT_POSITIVE"
+        || "I2S_SSC_TX_FS_OUTPUT_LOW"
+        || "I2S_SSC_TX_FS_OUTPUT_HIGH"
+        || "I2S_SSC_TX_FS_OUTPUT_TOGGLING"
+
+    enum DRV_I2S_SSC_TX_FS_DATA_ENABLE
+        "I2S_SSC_TX_OUT_DEF_VALUE"
+        || "I2S_SSC_TX_OUT_TX_SYNC_HOLD_REG"
+
+    enum DRV_I2S_SSC_TX_FS_EDGE_DETECTION
+        "I2S_SSC_TX_FS_EDGE_POSITIVE"
+        || "I2S_SSC_TX_FS_EDGE_NEGATIVE"
+
+    config USE_DRV_I2S_NEEDED
+        bool
+
+    config USE_DRV_I2S
+        set SYS_CLK_PMC_ID_SSC optionally to y if USE_DRV_I2S
+        bool "Use I2S Driver?"
+        default y if USE_DRV_I2S_NEEDED
+        default n
+        select DRIVER
+        ---help---
+        IDH_HTML_I2S_Driver_Library
+        ---endhelp---
+
+    ifblock USE_DRV_I2S
+        config DRV_I2S_IMPL
+            string "Driver Implementation"
+            range DRV_I2S_IMPLEMENTATION
+            default "DYNAMIC"
+            persistent
+            ---help---
+            IDH_HTML_I2S_Driver_Library
+            ---endhelp---
+
+        ifblock DRV_I2S_ENABLE_DMA=n
+            config DRV_I2S_INTERRUPT_MODE
+                bool "Interrupt Mode"
+                    select USE_SYS_INT_NEEDED
+                default n
+                ---help---
+                IDH_HTML_DRV_I2S_INTERRUPT_MODE
+                ---endhelp---
+        endif
+
+        ifblock DRV_I2S_INTERRUPT_MODE=n
+            config DRV_I2S_ENABLE_DMA
+                bool "DMA Mode"
+                    select USE_SYS_DMA_NEEDED
+                default y
+                persistent
+                ---help---
+                IDH_HTML_DRV_I2S_INTERRUPT_MODE
+                ---endhelp---
+        endif
+
+        config DRV_I2S_DMA_INTERRUPTS_ENABLE
+            bool "Enable DMA Channel Interrupts?"
+            depends on DRV_I2S_ENABLE_DMA
+            select USE_SYS_INT_NEEDED
+            default y
+            persistent
+            ---help---
+            IDH_HTML_DRV_I2S_INIT
+            ---endhelp---
+
+        config DRV_I2S_INSTANCES_NUMBER
+            int "Number of I2S Driver Instances"
+            range 1 3
+            default 1
+            persistent
+            ---help---
+            IDH_HTML_DRV_I2S_INSTANCES_NUMBER
+            ---endhelp---
+
+        config DRV_I2S_CLIENTS_NUMBER
+            int "Number of I2S Driver Clients"
+            default 1
+            ---help---
+            IDH_HTML_DRV_I2S_CLIENTS_NUMBER
+            ---endhelp---
+
+        source "$HARMONY_VERSION_PATH/framework/driver/i2s/config/drv_i2s_pic32c_idx.ftl" 6 instances
+    endif
+endmenu
+
+ifblock USE_DRV_I2S
+    add "<#include \"/framework/driver/i2s/templates/drv_i2s_ssc_pic32c.h.ftl\">"  to list SYSTEM_CONFIG_H_DRIVER_CONFIGURATION
+    add "<#include \"/framework/driver/i2s/templates/drv_i2s_ssc_pic32c.c.ftl\">"  to list SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA
+    add "<#include \"/framework/driver/i2s/templates/drv_i2s_pic32c_init.c.ftl\">"  to list SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS
+    add "<#include \"/framework/driver/i2s/templates/drv_i2s_pic32c_tasks.c.ftl\">"  to list SYSTEM_TASKS_C_CALL_DRIVER_TASKS
+    file DRV_I2S_H "$HARMONY_VERSION_PATH/framework/driver/i2s/drv_i2s.h" to "$PROJECT_HEADER_FILES/framework/driver/i2s/drv_i2s.h"
+    file DRV_I2S_VAR_H "$HARMONY_VERSION_PATH/framework/driver/i2s/src/drv_i2s_variant_mapping.h" to "$PROJECT_HEADER_FILES/framework/driver/i2s/src/drv_i2s_variant_mapping.h"
+endif
+
+ifblock !(USE_DRV_I2S)
+    add "pfnSSC_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+endif
+
+ifblock USE_DRV_I2S
+    file DRV_I2S_PIC32C_C "$HARMONY_VERSION_PATH/framework/driver/i2s/src/dynamic/drv_i2s_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/driver/i2s/src/dynamic/drv_i2s_pic32c.c"
+    file DRV_I2S_PIC32C_LOCAL_H "$HARMONY_VERSION_PATH/framework/driver/i2s/src/drv_i2s_local.h" to "$PROJECT_HEADER_FILES/framework/driver/i2s/src/drv_i2s_local.h"
+    file DRV_I2S_SSC_PIC32C_C "$HARMONY_VERSION_PATH/framework/driver/i2s/src/dynamic/drv_i2s_ssc_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/driver/i2s/src/dynamic/drv_i2s_ssc_pic32c.c"
+    file DRV_I2S_SSC_PIC32C_H "$HARMONY_VERSION_PATH/framework/driver/i2s/src/drv_i2s_ssc_pic32c_local.h" to "$PROJECT_HEADER_FILES/framework/driver/i2s/src/drv_i2s_ssc_pic32c_local.h"
+endif

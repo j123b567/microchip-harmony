@@ -1,0 +1,15 @@
+# file: mips.hconfig
+
+#source "$HARMONY_VERSION_PATH/framework/arch/mips/devices/*.hconfig"
+
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001320.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001143.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001156.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001168.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001185.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001191.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001290.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001361.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001402.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DS60001404.hconfig"
+source "$HARMONY_VERSION_PATH/bsp/config/DSTBDP32WK.hconfig"

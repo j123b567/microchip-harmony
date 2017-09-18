@@ -1,0 +1,11 @@
+menu "BM64"
+
+config USE_DRV_BLUETOOTH_BM64
+    bool "Use BM64 Driver?"
+    default n
+    persistent
+    ---help---
+    IDH_HTML_BM64_Bluetooth_Driver_Library
+    ---endhelp---
+
+endmenu  	

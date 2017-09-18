@@ -1,0 +1,132 @@
+menu "DAC"
+    depends on HAVE_DAC
+
+enum DRV_DAC_OUTPUT_MODE
+    "SINGLE_ENDED"
+	|| "DIFFERENTIAL"	
+
+enum DRV_DAC_MODE_OPTIONS
+    "TRIGGER_MODE"
+	|| "FREE_RUNNING_MODE"
+	|| "MAX_SPEED_MODE"
+	
+enum DRV_DAC_TRIGGER_SOURCE
+    "EXTERNAL_INPUT_DATRG"
+	|| "TC0_TIOA0_EVENT"
+	|| "TC0_TIOA1_EVENT"
+	|| "TC0_TIOA2_EVENT"
+	|| "PWM0_EVENT0"	
+	|| "PWM0_EVENT1"
+	|| "PWM1_EVENT0"
+	|| "PWM1_EVENT1"	
+	
+enum DRV_DAC_OVERSAMPLE_RATIO
+    "OSR_1"
+	|| "OSR_2"
+	|| "OSR_4"
+	|| "OSR_8"
+	|| "OSR_16"	
+	|| "OSR_32"
+
+enum DRV_DAC_SPEED_MAX_MODE
+    "1M"
+	
+enum DRV_DAC_SPEED_TRIGGER_MODE
+    "1M"
+	|| "500K"
+	
+enum DRV_DAC_SPEED_FREE_MODE
+    "1M"
+	|| "500K"
+	|| "BYPASS"
+
+config USE_DRV_DAC
+    depends on HAVE_DAC
+    bool "Use DAC Driver?"
+    set SYS_CLK_PMC_ID_DACC optionally to y if USE_DRV_DAC
+    set SYS_CLK_PMC_ID_DACC optionally to n if !USE_DRV_DAC
+    default n	
+
+config DRV_DAC_INTERRUPT
+    bool "Interrupt"
+    depends on USE_DRV_DAC
+    default n
+
+config DRV_DAC_INTERRUPT_HANDLER
+    string "Interrupt handler name"
+    depends on USE_DRV_DAC
+	depends on DRV_DAC_INTERRUPT
+    default "DAC_Handler"
+
+config DRV_DAC_INTERRUPT_PRIORITY
+    string "Interrupt priority"
+    depends on USE_DRV_DAC
+	depends on DRV_DAC_INTERRUPT
+	range DRV_DAC_INTERRUPT_PRIORITY_LEVEL
+    default "INT_PRIORITY_LEVEL7"	
+
+config DRV_DAC_INT_SRC
+    string
+    depends on USE_DRV_DAC
+    default "DACC_IRQn" 
+
+config DRV_DAC_CLOCK
+    string "Clock Source"
+    depends on USE_DRV_DAC
+    default SYS_CLK_MASTERCLK_FREQ
+    persistent
+       
+config DRV_DAC_PRESACLER_VALUE
+    int "Select Prescaler Value"
+    depends on USE_DRV_DAC
+    range 0 15
+    default 15
+    
+comment "*** Select Prescaler value to ensure DAC Clock frequency is less than 12MHz ***"
+    depends on USE_DRV_DAC
+    
+config DRV_DAC_DRIVER_MODE
+    string "Output Mode"
+    depends on USE_DRV_DAC
+    range DRV_DAC_OUTPUT_MODE
+    default "SINGLE_ENDED" 
+
+config DRV_DAC_CHANNEL_NUMBER
+    int "Number of DAC Channel"
+    depends on USE_DRV_DAC && DRV_DAC_DRIVER_MODE="SINGLE_ENDED"
+    range 1 2
+    default 1
+
+#Local macro for differential mode
+config DRV_DAC_CHANNEL_NUMBER_SINGLE
+    int 
+    depends on USE_DRV_DAC && DRV_DAC_DRIVER_MODE="DIFFERENTIAL"
+    default 1
+    
+source "$HARMONY_VERSION_PATH/framework/driver/dac/config/drv_dac_pic32c_idx.ftl" 2 instances
+
+endmenu
+
+ifblock USE_DRV_DAC
+    add "<#include \"/framework/driver/dac/templates/drv_dac_header_pic32c.h.ftl\">"  to list SYSTEM_DEFINITIONS_H_INCLUDES
+    add "<#include \"/framework/driver/dac/templates/drv_dac_definitions_pic32c.h.ftl\">"  to list SYSTEM_DEFINITIONS_H_OBJECTS
+    add "<#include \"/framework/driver/dac/templates/drv_dac_pic32c.h.ftl\">"  to list SYSTEM_CONFIG_H_DRIVER_CONFIGURATION
+    add "<#include \"/framework/driver/dac/templates/drv_dac_pic32c.c.ftl\">"  to list SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA
+    add "<#include \"/framework/driver/dac/templates/drv_dac_init_pic32c.c.ftl\">"  to list SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS
+    add "<#include \"/framework/driver/dac/templates/drv_dac_int_pic32c.c.ftl\">"  to list SYSTEM_INTERRUPT_C_VECTORS
+    add "<#include \"/framework/driver/dac/templates/drv_dac_tasks_pic32c.c.ftl\">"  to list SYSTEM_TASKS_C_CALL_DRIVER_TASKS
+
+    file DRV_DAC_PIC32C_C "$HARMONY_VERSION_PATH/framework/driver/dac/src/drv_dac_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/driver/dac/src/drv_dac_pic32.c"
+    file DRV_DAC_H "$HARMONY_VERSION_PATH/framework/driver/dac/drv_dac.h" to "$PROJECT_HEADER_FILES/framework/driver/dac/drv_dac.h"
+    file DRV_DAC_LOCAL_PIC32C_H "$HARMONY_VERSION_PATH/framework/driver/dac/src/drv_dac_local_pic32c.h" to "$PROJECT_HEADER_FILES/framework/driver/dac/src/drv_dac_local_pic32c.h"
+    file DRV_DAC_H_DEFS "$HARMONY_VERSION_PATH/framework/driver/dac/drv_dac_definitions_pic32c.h" to "$PROJECT_HEADER_FILES/framework/driver/dac/drv_dac_definitions_pic32c.h"
+endif
+
+#Interrupt handler logic
+ifblock (USE_DRV_DAC && DRV_DAC_INTERRUPT)
+    add "pfnDACC_Handler ${CONFIG_DRV_DAC_INTERRUPT_HANDLER}" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+endif
+ifblock (!USE_DRV_DAC || !DRV_DAC_INTERRUPT)
+    add "pfnDACC_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+endif
+

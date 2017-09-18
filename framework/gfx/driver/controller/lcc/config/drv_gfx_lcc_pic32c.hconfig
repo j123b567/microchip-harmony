@@ -1,0 +1,23 @@
+menu "DMA Settings"
+
+config DRV_GFX_LCC_DMA_INSTANCE_CHANNEL
+    int "DMA Instance"
+    depends on USE_GFX_STACK
+    range 0 DMA_NUMBER_OF_CHANNELS
+    default 0
+
+config DRV_GFX_LCC_INTERRUPT_PRIORITY
+    string "Interrupt Priority"
+    depends on USE_GFX_STACK
+	range INT_PRIORITY_LEVEL
+        default "INT_PRIORITY_LEVEL7"
+        ---help---
+        IDH_HTML_INT_PRIORITY_LEVEL
+        ---endhelp---
+
+endmenu
+
+ifblock USE_DRV_GFX_LCC
+template DRV_GFX_LCC_GENERIC_H "$HARMONY_VERSION_PATH/framework/gfx/driver/controller/lcc/templates/drv_gfx_lcc_generic_pic32c.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/gfx/driver/controller/lcc/drv_gfx_lcc_generic.h"
+template DRV_GFX_LCC_GENERIC_C "$HARMONY_VERSION_PATH/framework/gfx/driver/controller/lcc/templates/drv_gfx_lcc_generic_pic32c.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/framework/gfx/driver/controller/lcc/drv_gfx_lcc_generic.c"
+endif

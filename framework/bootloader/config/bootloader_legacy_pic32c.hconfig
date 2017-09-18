@@ -1,0 +1,15 @@
+#############################################################################################
+# ENUM Options
+#############################################################################################
+enum BOOTLOADER_TRIGGER_TYPES
+    "NONE"
+################################################################
+
+config BOOTLOADER_TRIGGER_TYPE
+      string
+      default "NONE"
+      range BOOTLOADER_TRIGGER_TYPES
+      depends on USE_BOOTLOADER_LIBRARY
+      ---help---
+      On startup of the bootloader a trigger will start the program in bootloader mode.
+     ---endhelp---

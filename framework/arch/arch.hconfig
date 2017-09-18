@@ -1,0 +1,211 @@
+# file: arch.hconfig
+
+# DATA_SHEET_ID : Family
+# DS60001143    : MX 320/340/360/420/440/460
+# DS60001156    : MX 5XX/6XX/7XX
+# DS60001168    : MX 1XX/2XX
+# DS60001185    : MX 330/350/370/430/450/470
+# DS60001290    : MX 1XX/2XX/5XX
+# DS60001191    : MZ EC
+# DS60001320    : MZ EF
+# DS60001361    : MZ DA
+# DS60001402    : MK GP
+# DS60001404    : MK MC
+# DSTBDP32WK    : WK
+# DSTBDPIC32CZ  : PIC32CZ CA/GC
+# DSTBDPIC32CZ2 : PIC32CZ DA
+
+
+menu "Architecture Configuration"
+
+    # -----------------------------------------------------------------------------
+    # MPU
+    #
+    config ARCH_HAS_MPU
+        bool
+        default n
+
+    config DEVICE_HAS_MPU
+        depends on ARCH_HAS_MPU
+        bool
+        default n
+
+    # Allows the user to activate MPU
+    config PROJECT_USES_MPU
+        depends on DEVICE_HAS_MPU
+        bool "Enable MPU"
+        default n
+
+    # -----------------------------------------------------------------------------
+    # FPU
+    #
+    config ARCH_HAS_FPU
+        bool
+        default n
+
+    config DEVICE_HAS_FPU
+        bool
+        default n
+
+    # Allows the user to activate FPU
+    config PROJECT_USES_FPU
+        depends on DEVICE_HAS_FPU
+        bool "Enable FPU"
+        default n
+
+    source "$HARMONY_VERSION_PATH/framework/arch/arm/arm_fpu.hconfig"
+
+    # -----------------------------------------------------------------------------
+    # Customizable vectors
+    #
+    config ARCH_HAS_CUSTOMIZABLE_VECTORS
+        bool
+        default n
+
+    # Allows the user to rename core and peripheral vectors
+    config PROJECT_USES_CUSTOMIZABLE_VECTORS
+        depends on ARCH_HAS_CUSTOMIZABLE_VECTORS
+        bool "Enable customizable interrupt handlers"
+        default n
+
+    # Allows the user to relocate vectors in RAM
+    config PROJECT_RESET_HANDLER_CUSTOM_NAME
+        depends on PROJECT_USES_CUSTOMIZABLE_VECTORS
+        string "Name of Reset handler"
+        default "Reset_Handler"
+
+    # -----------------------------------------------------------------------------
+    # RAM vectors
+    #
+    config ARCH_HAS_RAM_VECTORS
+        bool
+        default n
+
+    # Allows the user to relocate vectors in RAM
+    config PROJECT_USES_RAM_VECTORS
+        depends on ARCH_HAS_RAM_VECTORS
+        bool "Enable vectors in RAM"
+        default n
+
+    # Allows the user to relocate vectors in RAM
+    #config PROJECT_RAM_VECTORS_ADDRESS
+    #    depends on PROJECT_USES_RAM_VECTORS
+    #    string "Address of vectors in RAM"
+    #    default ""
+
+    # -----------------------------------------------------------------------------
+    # Cache
+    #
+    config ARCH_HAS_CACHE
+        bool
+        default n
+
+    config DEVICE_HAS_CACHE
+        bool
+        default n
+
+    # Allows the user to activate the cache
+    config PROJECT_USES_CACHE
+        depends on ARCH_HAS_CACHE || DEVICE_HAS_CACHE
+        bool "Enable device cache"
+        default n
+        select PROJECT_USES_MPU
+
+    # -----------------------------------------------------------------------------
+    # Tightly Coupled Memory
+    #
+    config ARCH_HAS_TCM
+        bool
+        default n
+
+    config DEVICE_HAS_TCM
+        bool
+        default n
+
+    # Allows the user to activate the TCM
+    config PROJECT_USES_TCM
+        depends on ARCH_HAS_TCM || DEVICE_HAS_TCM
+        bool "Enable device TCM"
+        default n
+
+    # -----------------------------------------------------------------------------
+    # Core timer
+    #
+    config ARCH_HAS_CORE_TIMER
+        bool
+        default n
+
+    config DEVICE_HAS_CORE_TIMER
+        bool
+        default n
+
+    # Allows the user to activate CORE_TIMER
+    config PROJECT_USES_CORE_TIMER
+        depends on DEVICE_HAS_CORE_TIMER
+        bool "Enable Core timer"
+        default n
+
+    source "$HARMONY_VERSION_PATH/framework/arch/arm/arm_core_timer.hconfig"
+
+
+    # -----------------------------------------------------------------------------
+    # Core architectures
+    #
+    # ARM architecture selected
+    config ARCH_ARM
+        bool
+
+    config ARCH_ARM_CORTEX_M0PLUS
+        bool
+        select ARCH_ARM
+        select ARCH_HAS_CUSTOMIZABLE_VECTORS
+        select ARCH_HAS_RAM_VECTORS
+        select ARCH_HAS_CORE_TIMER
+        select HAVE_SWD
+        persistent
+
+    config ARCH_ARM_CORTEX_M4
+        bool
+        select ARCH_ARM
+        select ARCH_HAS_MPU
+        select ARCH_HAS_FPU
+        select ARCH_HAS_TCM
+        select ARCH_HAS_CACHE
+        select ARCH_HAS_CUSTOMIZABLE_VECTORS
+        select ARCH_HAS_RAM_VECTORS
+        select ARCH_HAS_CORE_TIMER
+        select HAVE_JTAG
+        select HAVE_SWD
+        persistent
+
+    config ARCH_ARM_CORTEX_M7
+        bool
+        select ARCH_ARM
+        select ARCH_HAS_MPU
+        select ARCH_HAS_FPU
+        select ARCH_HAS_TCM
+        select ARCH_HAS_CACHE
+        select ARCH_HAS_CUSTOMIZABLE_VECTORS
+        select ARCH_HAS_RAM_VECTORS
+        select ARCH_HAS_CORE_TIMER
+        select HAVE_JTAG
+        select HAVE_SWD
+        persistent
+
+    # MIPS architecture selected
+    config ARCH_MIPS
+        bool
+
+    # -----------------------------------------------------------------------------
+    # includes
+    #
+    source "$HARMONY_VERSION_PATH/framework/arch/$DATA_SHEET_ID.hconfig"
+endmenu
+
+ifblock ARCH_ARM
+    source "$HARMONY_VERSION_PATH/framework/arch/arm/arm.hconfig"
+endif
+
+#ifblock ARCH_MIPS
+#    source "$HARMONY_VERSION_PATH/framework/arch/mips/mips.hconfig"
+#endif

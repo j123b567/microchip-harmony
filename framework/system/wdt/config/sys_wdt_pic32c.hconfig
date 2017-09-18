@@ -1,0 +1,129 @@
+menu "WDT"
+    depends on HAVE_WDT
+	
+	config USE_SYS_WDT
+	    bool "Use Watchdog System Service"
+		default n
+		---help---
+		IDH_HTML_Watchdog_Timer__WDT__System_Service_Library
+		---endhelp---
+
+	config SYS_WDT_RSTEN
+        bool "Reset enabled "
+        depends on USE_SYS_WDT 
+        default y
+		
+	config SYS_WDT_WDD
+        hex "Delta Value (WDD) : "
+        depends on USE_SYS_WDT 
+        range 0x00 0xFFF
+        default 0xFFF
+	
+	config SYS_WDT_WDV
+        hex "Counter Value (WDV) : "
+        depends on USE_SYS_WDT 
+        range 0x00 0xFFF
+        default 0xFFF
+	
+	config SYS_WDT_DEBUG_HALT
+        bool "Halt during Debug"
+        depends on USE_SYS_WDT 
+        default n
+	
+	config SYS_WDT_IDLE_HALT
+       bool "Halt during Idle"
+        depends on USE_SYS_WDT 
+        default n
+	
+	config SYS_WDT_INTERRUPT_MODE
+		bool "Enable Interrupt" if !(SYS_WDT_RSTEN)
+		depends on USE_SYS_WDT 
+		default n
+	
+    config SYS_WDT_PREEMPT_PRIORITY
+		string "Interrupt preemt priority :"
+		depends on USE_SYS_WDT
+		depends on SYS_WDT_INTERRUPT_MODE
+		range INT_PRIORITY_LEVEL_PIC32C
+		default "INT_PRIORITY_LEVEL0"
+
+	config SYS_WDT_INTERRUPT_HANDLER_NAME
+        string "Interrupt handler name"
+        depends on USE_SYS_WDT && SYS_WDT_INTERRUPT_MODE 
+        default "WDT_Handler"
+	
+	config USE_SYS_RSWDT
+		bool "Use Reinforced Safety Watchdog service"
+		depends on HAVE_RSWDT && HAVE_WDT
+		default n
+		---help---
+		IDH_HTML_Watchdog_Timer__WDT__System_Service_Library
+		---endhelp---
+	
+	config SYS_RSWDT_RSTEN
+        bool "Reset enabled "
+        depends on USE_SYS_RSWDT 
+        default y
+	
+	config SYS_RSWDT_WDV
+        hex "Counter Value (WDV) : "
+        depends on HAVE_RSWDT && USE_SYS_RSWDT
+        range 0x00 0xFFF
+        default 0xFFF
+	
+	config SYS_RSWDT_DEBUG_HALT
+        bool "Halt during Debug"
+        depends on USE_SYS_WDT && USE_SYS_RSWDT
+        default n
+	
+	config SYS_RSWDT_IDLE_HALT
+        bool "Halt during Idle"
+        depends on USE_SYS_WDT && USE_SYS_RSWDT
+        default n
+	
+	config SYS_RSWDT_INTERRUPT_MODE
+		bool "Enable Interrupt"
+		depends on HAVE_RSWDT && USE_SYS_RSWDT
+		default n
+    
+    config SYS_RSWDT_PREEMPT_PRIORITY
+		string "Interrupt preemt priority :"
+		depends on USE_SYS_RSWDT
+		depends on SYS_RSWDT_INTERRUPT_MODE
+		range INT_PRIORITY_LEVEL_PIC32C
+		default "INT_PRIORITY_LEVEL0"
+	
+    config SYS_RSWDT_INTERRUPT_HANDLER_NAME
+        string "Interrupt handler name"
+        depends on USE_SYS_RSWDT && SYS_RSWDT_INTERRUPT_MODE
+        default "RSWDT_Handler"
+	
+endmenu
+
+# IMPORTANT : As WDT is enable by default on PIC32C , the WDT driver is always included  
+# sys_wdt_init.c content will vary depending on the use of WDT at MHC level 
+# USE_SYS_WDT = y : Configure WDT According to user requirements
+# USE_SYS_WDT = n : Disable WDT
+
+ifblock(HAVE_WDT)
+	add "<#include \"/framework/system/wdt/templates/sys_wdt_init.c.ftl\">"  to list SYSTEM_INIT_C_INITIALIZE_SYSTEM_SERVICES
+	add "#include \"system/wdt/sys_wdt.h\"" to list SYSTEM_DEFINITIONS_H_INCLUDES
+	add "<#include \"/framework/system/wdt/templates/sys_wdt_int.c.ftl\">" to list SYSTEM_INTERRUPT_C_VECTORS
+	template SYS_WDT_H "$HARMONY_VERSION_PATH/framework/system/wdt/templates/sys_wdt.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/system/wdt/sys_wdt.h"
+    template SYS_WDT_C "$HARMONY_VERSION_PATH/framework/system/wdt/templates/sys_wdt.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/framework/system/wdt/sys_wdt.c"
+	file SYS_WDT_LOCAL_C "$HARMONY_VERSION_PATH/framework/system/wdt/sys_wdt_local.h" to "$PROJECT_HEADER_FILES/framework/system/wdt/sys_wdt_local.h"
+	ifblock(SYS_WDT_INTERRUPT_MODE)
+		# Add WDT Interrupt Handler to vector table
+		add "pfnWDT_Handler ${CONFIG_SYS_WDT_INTERRUPT_HANDLER_NAME}" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+	endif
+	ifblock(!SYS_WDT_INTERRUPT_MODE)
+		add "pfnWDT_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+	endif
+	ifblock(SYS_RSWDT_INTERRUPT_MODE && HAVE_RSWDT)
+		# Add RSWDT Interrupt Handler to vector table
+		add "pfnRSWDT_Handler ${CONFIG_SYS_RSWDT_INTERRUPT_HANDLER_NAME}" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS	
+	endif
+	ifblock(!SYS_RSWDT_INTERRUPT_MODE && HAVE_RSWDT)
+		add "pfnRSWDT_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+	endif
+endif

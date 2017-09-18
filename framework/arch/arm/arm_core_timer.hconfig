@@ -1,0 +1,53 @@
+# file: arm_fpu.hconfig
+
+menu "ARM Cortex-M Systick"
+  depends on PROJECT_USES_CORE_TIMER
+
+  config ARM_CORTEX_M_SYSTICK_PERIOD
+    string "period in ms"
+    default "1000"
+	depends on  !ARM_CORTEX_M_SYSTICK_HANDLER_PROVIDED_BY_3RD_PARTY
+
+  config ARM_CORTEX_M_SYSTICK_USE_INTERRUPT
+    bool "Interrupt driven"
+
+  config ARM_CORTEX_M_SYSTICK_HANDLER_PROVIDED_BY_3RD_PARTY
+    bool "Provided by 3rd party"
+    depends on ARM_CORTEX_M_SYSTICK_USE_INTERRUPT
+    default n
+
+  config ARM_CORTEX_M_SYSTICK_INTERRUPT_PRIORITY
+    string "Interrupt Priority"
+    depends on (ARM_CORTEX_M_SYSTICK_USE_INTERRUPT && !ARM_CORTEX_M_SYSTICK_HANDLER_PROVIDED_BY_3RD_PARTY)
+    range INT_PRIORITY_LEVEL_PIC32C
+    default "INT_PRIORITY_LEVEL7"
+    ---help---
+    IDH_HTML_INT_PRIORITY_LEVEL
+    ---endhelp---
+
+  config ARM_CORTEX_M_SYSTICK_HANDLER_NAME
+    string "Interrupt handler name"
+    depends on ARM_CORTEX_M_SYSTICK_USE_INTERRUPT
+    default "SysTick_Handler"
+endmenu
+
+ifblock PROJECT_USES_CORE_TIMER
+  ifblock !(ARM_CORTEX_M_SYSTICK_HANDLER_PROVIDED_BY_3RD_PARTY)
+      add "#include \"arch/arch.h\"" to list SYSTEM_DEFINITIONS_H_INCLUDES
+      file ARM_CORTEX_M_H  "$HARMONY_VERSION_PATH/framework/arch/arch.h" to "$PROJECT_HEADER_FILES/arch/arch.h"
+      template ARM_CORTEX_M_SYSTICK_C "$HARMONY_VERSION_PATH/framework/arch/arm/templates/system_core_timer.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/system_core_timer.c"
+      add "<#include \"/framework/arch/arm/templates/core_timer_init.c.ftl\">" to list SYSTEM_INIT_C_SYS_INITIALIZE_CORE
+  endif
+
+  ifblock ARM_CORTEX_M_SYSTICK_USE_INTERRUPT
+    # Add SysTick Interrupt Handler to vector table
+    # list format is "vectors structure member name" "function symbol name"
+    add "pfnSysTick_Handler ${CONFIG_ARM_CORTEX_M_SYSTICK_HANDLER_NAME}" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+  endif
+
+  ifblock !(ARM_CORTEX_M_SYSTICK_USE_INTERRUPT)
+    # Add SysTick Interrupt Handler to vector table
+    # list format is "vectors structure member name" "function symbol name"
+    add "pfnSysTick_Handler Dummy_Handler" to list SYSTEM_STARTUP_PIC32C_INTERRUPT_HANDLERS
+  endif
+endif

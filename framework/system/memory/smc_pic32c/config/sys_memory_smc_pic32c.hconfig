@@ -1,0 +1,872 @@
+menu "SMC Configuration"
+depends on USE_SYS_MEMORY_SMC
+
+config SYS_MEMORY_SMC_ID
+	int "SMC_ID"
+	default 0
+	persistent
+
+
+enum SMC_DATA_BUS_WIDTH
+"SMC_DATA_BUS_WIDTH_8BIT"
+  || "SMC_DATA_BUS_WIDTH_16BIT"
+
+
+enum SMC_PAGE_SIZE
+"SMC_MODE_PS_4_BYTE"
+  || "SMC_MODE_PS_8_BYTE"
+  || "SMC_MODE_PS_16_BYTE"
+  || "SMC_MODE_PS_32_BYTE"
+
+enum SMC_BAT
+"BAT_BYTE_SELECT"
+  || "BAT_BYTE_WRITE"
+
+enum SMC_NWAIT_MODE
+"NWAIT_READY_MODE"
+  || "NWAIT_FROZEN_MODE"
+  || "NWAIT_DISABLED_MODE"
+
+
+# SMC SMC Global features
+menu "SMC Global features"
+depends on USE_SYS_MEMORY_SMC
+
+
+config SYS_MEMORY_SMC_WRITE_PROTECTION
+  bool "Enable write protection on SMC Timing registers?"
+  depends on USE_SYS_MEMORY_SMC
+  default n
+
+config SYS_MEMORY_SMC_MEM_SCRAMBLING
+  bool "Enable Memory scrambling?"
+  depends on USE_SYS_MEMORY_SMC
+  default n
+
+
+config SYS_MEMORY_SMC_CS0_MEM_SCRAMBLING
+  bool "Enable Memory Scrambling on CS0?"
+  depends on USE_SYS_MEMORY_SMC
+  depends on SYS_MEMORY_SMC_MEM_SCRAMBLING
+  depends on SYS_MEMORY_SMC_CS0
+  default n
+
+config SYS_MEMORY_SMC_CS1_MEM_SCRAMBLING
+  bool "Enable Memory Scrambling on CS1?"
+  depends on USE_SYS_MEMORY_SMC
+  depends on SYS_MEMORY_SMC_MEM_SCRAMBLING
+  depends on SYS_MEMORY_SMC_CS1
+  default n
+
+config SYS_MEMORY_SMC_CS2_MEM_SCRAMBLING
+  bool  "Enable Memory Scrambling on CS2?"
+  depends on USE_SYS_MEMORY_SMC
+  depends on SYS_MEMORY_SMC_MEM_SCRAMBLING
+  depends on SYS_MEMORY_SMC_CS2
+  default n
+
+config SYS_MEMORY_SMC_CS3_MEM_SCRAMBLING
+  bool "Enable Memory Scrambling on CS3?"
+  depends on USE_SYS_MEMORY_SMC
+  depends on SYS_MEMORY_SMC_MEM_SCRAMBLING
+  depends on SYS_MEMORY_SMC_CS3
+  default n
+endmenu
+# SMC SMC Global features end menu
+
+#SMC Chip Select Selection and Settings
+menu "SMC Chip Select Selection and Settings"
+config SYS_MEMORY_SMC_CS0
+  bool "Enable Chip Select 0"
+  depends on USE_SYS_MEMORY_SMC
+  default y
+  ---help---
+  ---endhelp---
+config SYS_MEMORY_SMC_CS1
+  bool "Enable Chip Select 1"
+  depends on USE_SYS_MEMORY_SMC
+  default n
+  ---help---
+  ---endhelp---
+config SYS_MEMORY_SMC_CS2
+  bool "Enable Chip Select 2"
+  depends on USE_SYS_MEMORY_SMC
+  default n
+  ---help---
+  ---endhelp---
+config SYS_MEMORY_SMC_CS3
+  bool "Enable Chip Select 3"
+  depends on USE_SYS_MEMORY_SMC
+  default n
+  ---help---
+  ---endhelp---
+
+# SMC CS0 setting menu
+menu " Chip Select 0 Setup"
+visible if ( SYS_MEMORY_SMC_CS0)
+#SMC Setup Timings
+  menu "SMC Setup Timings"
+  config SMC_SETUP_CS0_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_SETUP_CS0
+  depends on SMC_SETUP_CS0_REGISTER
+  int "NWE Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_SETUP_CS0
+  depends on SMC_SETUP_CS0_REGISTER
+  int "NCS Setup Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_SETUP_CS0
+  depends on SMC_SETUP_CS0_REGISTER
+  int "NRD Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_SETUP_CS0
+  depends on SMC_SETUP_CS0_REGISTER
+  int "NCS Setup Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  endmenu
+#SMC Setup Timings end menu
+
+#SMC Pulse Timings
+  menu "SMC Pulse Timings"
+  config SMC_PULSE_CS0_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_PULSE_CS0
+  depends on SMC_PULSE_CS0_REGISTER
+  int "NWE Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_PULSE_CS0
+  depends on SMC_PULSE_CS0_REGISTER
+  int "NCS Pulse Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_PULSE_CS0
+  depends on SMC_PULSE_CS0_REGISTER
+  int "NRD Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_PULSE_CS0
+  depends on SMC_PULSE_CS0_REGISTER
+  int "NCS Pulse Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Pulse Timings end menu
+
+#SMC Cycle Timings
+  menu "SMC Cycle Timings"
+  config SMC_CYCLE_CS0_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_CYCLE_CS0
+  depends on SMC_CYCLE_CS0_REGISTER
+  int "Total Write Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_CYCLE_CS0
+  depends on SMC_CYCLE_CS0_REGISTER
+  int "Total Read Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Cycle Timings end menu
+
+#SMC Mode Settings
+  menu "SMC Mode Settings"
+  config SMC_MODE_CS0_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_DATA_BUS_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  string "External Memory Data Bus Width"
+  range SMC_DATA_BUS_WIDTH
+  default "SMC_DATA_BUS_WIDTH_16BIT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_BAT_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  depends on (SYS_MEMORY_SMC_DATA_BUS_CS0 = "SMC_DATA_BUS_WIDTH_16BIT")
+  string "Byte Select access type (16-bit data bus only)"
+  range SMC_BAT
+  default "BAT_BYTE_SELECT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PMEN_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  bool "Enable external Memory Page mode?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PS_CS0
+  depends on SMC_MODE_CS0_REGISTER && SYS_MEMORY_SMC_PMEN_CS0
+  string "External Memory Page Size"
+  range SMC_PAGE_SIZE
+  default "SMC_MODE_PS_4_BYTE"
+  ---help---
+  ---endhelp---
+
+
+  config SYS_MEMORY_SMC_TDF_MODE_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  bool "Enable Optimization of the TDF wait states?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_TDF_CYCLES_CS0
+  depends on SMC_MODE_CS0_REGISTER && SYS_MEMORY_SMC_TDF_MODE_CS0
+  int "Data Float Time (nb of cycles)"
+  range 0 15
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NWAIT_MODE_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  string "NWAIT Mode Configuration"
+  range SMC_NWAIT_MODE
+  default "NWAIT_DISABLED_MODE"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_WRITE_MODE_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  bool "Enable Write Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_READ_MODE_CS0
+  depends on SMC_MODE_CS0_REGISTER
+  bool "Enable Read Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+  endmenu
+
+#SMC Mode Settings end menu
+
+endmenu
+# SMC CS0 timings
+
+# SMC CS1 setting menu
+menu " Chip Select 1 Setup"
+visible if ( SYS_MEMORY_SMC_CS1)
+#SMC Setup Timings
+  menu "SMC Setup Timings"
+  config SMC_SETUP_CS1_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_SETUP_CS1
+  depends on SMC_SETUP_CS1_REGISTER
+  int "NWE Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_SETUP_CS1
+  depends on SMC_SETUP_CS1_REGISTER
+  int "NCS Setup Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_SETUP_CS1
+  depends on SMC_SETUP_CS1_REGISTER
+  int "NRD Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_SETUP_CS1
+  depends on SMC_SETUP_CS1_REGISTER
+  int "NCS Setup Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  endmenu
+#SMC Setup Timings end menu
+
+#SMC Pulse Timings
+  menu "SMC Pulse Timings"
+  config SMC_PULSE_CS1_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_PULSE_CS1
+  depends on SMC_PULSE_CS1_REGISTER
+  int "NWE Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_PULSE_CS1
+  depends on SMC_PULSE_CS1_REGISTER
+  int "NCS Pulse Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_PULSE_CS1
+  depends on SMC_PULSE_CS1_REGISTER
+  int "NRD Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_PULSE_CS1
+  depends on SMC_PULSE_CS1_REGISTER
+  int "NCS Pulse Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Pulse Timings end menu
+
+#SMC Cycle Timings
+  menu "SMC Cycle Timings"
+  config SMC_CYCLE_CS1_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_CYCLE_CS1
+  depends on SMC_CYCLE_CS1_REGISTER
+  int "Total Write Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_CYCLE_CS1
+  depends on SMC_CYCLE_CS1_REGISTER
+  int "Total Read Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Cycle Timings end menu
+
+#SMC Mode Settings
+  menu "SMC Mode Settings"
+  config SMC_MODE_CS1_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_DATA_BUS_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  string "External Memory Data Bus Width"
+  range SMC_DATA_BUS_WIDTH
+  default "SMC_DATA_BUS_WIDTH_16BIT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_BAT_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  depends on (SYS_MEMORY_SMC_DATA_BUS_CS1 = "SMC_DATA_BUS_WIDTH_16BIT")
+  string "Byte Select access type (16-bit data bus only)"
+  range SMC_BAT
+  default "BAT_BYTE_SELECT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PMEN_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  bool "Enable external Memory Page mode?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PS_CS1
+  depends on SMC_MODE_CS1_REGISTER && SYS_MEMORY_SMC_PMEN_CS1
+  string "External Memory Page Size"
+  range SMC_PAGE_SIZE
+  default "SMC_MODE_PS_4_BYTE"
+  ---help---
+  ---endhelp---
+
+
+  config SYS_MEMORY_SMC_TDF_MODE_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  bool "Enable Optimization of the TDF wait states?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_TDF_CYCLES_CS1
+  depends on SMC_MODE_CS1_REGISTER && SYS_MEMORY_SMC_TDF_MODE_CS1
+  int "Data Float Time (nb of cycles)"
+  range 0 15
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NWAIT_MODE_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  string "NWAIT Mode Configuration"
+  range SMC_NWAIT_MODE
+  default "NWAIT_DISABLED_MODE"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_WRITE_MODE_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  bool "Enable Write Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_READ_MODE_CS1
+  depends on SMC_MODE_CS1_REGISTER
+  bool "Enable Read Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Mode Settings end menu
+
+endmenu
+# SMC CS1 timings
+
+# SMC CS2 setting menu
+menu " Chip Select 2 Setup"
+visible if ( SYS_MEMORY_SMC_CS2)
+#SMC Setup Timings
+  menu "SMC Setup Timings"
+  config SMC_SETUP_CS2_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_SETUP_CS2
+  depends on SMC_SETUP_CS2_REGISTER
+  int "NWE Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_SETUP_CS2
+  depends on SMC_SETUP_CS2_REGISTER
+  int "NCS Setup Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_SETUP_CS2
+  depends on SMC_SETUP_CS2_REGISTER
+  int "NRD Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_SETUP_CS2
+  depends on SMC_SETUP_CS2_REGISTER
+  int "NCS Setup Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  endmenu
+#SMC Setup Timings end menu
+
+#SMC Pulse Timings
+  menu "SMC Pulse Timings"
+  config SMC_PULSE_CS2_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_PULSE_CS2
+  depends on SMC_PULSE_CS2_REGISTER
+  int "NWE Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_PULSE_CS2
+  depends on SMC_PULSE_CS2_REGISTER
+  int "NCS Pulse Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_PULSE_CS2
+  depends on SMC_PULSE_CS2_REGISTER
+  int "NRD Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_PULSE_CS2
+  depends on SMC_PULSE_CS2_REGISTER
+  int "NCS Pulse Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Pulse Timings end menu
+
+#SMC Cycle Timings
+  menu "SMC Cycle Timings"
+  config SMC_CYCLE_CS2_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_CYCLE_CS2
+  depends on SMC_CYCLE_CS2_REGISTER
+  int "Total Write Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_CYCLE_CS2
+  depends on SMC_CYCLE_CS2_REGISTER
+  int "Total Read Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Cycle Timings end menu
+
+#SMC Mode Settings
+  menu "SMC Mode Settings"
+  config SMC_MODE_CS2_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_DATA_BUS_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  string "External Memory Data Bus Width"
+  range SMC_DATA_BUS_WIDTH
+  default "SMC_DATA_BUS_WIDTH_16BIT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_BAT_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  depends on (SYS_MEMORY_SMC_DATA_BUS_CS2 = "SMC_DATA_BUS_WIDTH_16BIT")
+  string "Byte Select access type (16-bit data bus only)"
+  range SMC_BAT
+  default "BAT_BYTE_SELECT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PMEN_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  bool "Enable external Memory Page mode?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PS_CS2
+  depends on SMC_MODE_CS2_REGISTER && SYS_MEMORY_SMC_PMEN_CS2
+  string "External Memory Page Size"
+  range SMC_PAGE_SIZE
+  default "SMC_MODE_PS_4_BYTE"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_TDF_MODE_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  bool "Enable Optimization of the TDF wait states?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_TDF_CYCLES_CS2
+  depends on SMC_MODE_CS2_REGISTER && SYS_MEMORY_SMC_TDF_MODE_CS2
+  int "Data Float Time (nb of cycles)"
+  range 0 15
+  default 0
+  ---help---
+  ---endhelp---
+
+
+  config SYS_MEMORY_SMC_NWAIT_MODE_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  string "NWAIT Mode Configuration"
+  range SMC_NWAIT_MODE
+  default "NWAIT_DISABLED_MODE"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_WRITE_MODE_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  bool "Enable Write Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_READ_MODE_CS2
+  depends on SMC_MODE_CS2_REGISTER
+  bool "Enable Read Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Mode Settings end menu
+
+endmenu
+# SMC CS2 timings
+
+# SMC CS3 setting menu
+menu " Chip Select 3 Setup"
+visible if ( SYS_MEMORY_SMC_CS3)
+#SMC Setup Timings
+  menu "SMC Setup Timings"
+  config SMC_SETUP_CS3_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_SETUP_CS3
+  depends on SMC_SETUP_CS3_REGISTER
+  int "NWE Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_SETUP_CS3
+  depends on SMC_SETUP_CS3_REGISTER
+  int "NCS Setup Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_SETUP_CS3
+  depends on SMC_SETUP_CS3_REGISTER
+  int "NRD Setup Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_SETUP_CS3
+  depends on SMC_SETUP_CS3_REGISTER
+  int "NCS Setup Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  endmenu
+#SMC Setup Timings end menu
+
+#SMC Pulse Timings
+  menu "SMC Pulse Timings"
+  config SMC_PULSE_CS3_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_PULSE_CS3
+  depends on SMC_PULSE_CS3_REGISTER
+  int "NWE Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_WR_PULSE_CS3
+  depends on SMC_PULSE_CS3_REGISTER
+  int "NCS Pulse Length in Write Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_PULSE_CS3
+  depends on SMC_PULSE_CS3_REGISTER
+  int "NRD Pulse Length"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NCS_RD_PULSE_CS3
+  depends on SMC_PULSE_CS3_REGISTER
+  int "NCS Pulse Length in Read Access"
+  default 16
+  range 0 63
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Pulse Timings end menu
+
+#SMC Cycle Timings
+  menu "SMC Cycle Timings"
+  config SMC_CYCLE_CS3_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_NWE_CYCLE_CS3
+  depends on SMC_CYCLE_CS3_REGISTER
+  int "Total Write Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_NRD_CYCLE_CS3
+  depends on SMC_CYCLE_CS3_REGISTER
+  int "Total Read Cycle Length"
+  default 3
+  range 0 511
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Cycle Timings end menu
+
+#SMC Mode Settings
+  menu "SMC Mode Settings"
+  config SMC_MODE_CS3_REGISTER
+  bool
+  default y
+
+  config SYS_MEMORY_SMC_DATA_BUS_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  string "External Memory Data Bus Width"
+  range SMC_DATA_BUS_WIDTH
+  default "SMC_DATA_BUS_WIDTH_16BIT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_BAT_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  depends on (SYS_MEMORY_SMC_DATA_BUS_CS3 = "SMC_DATA_BUS_WIDTH_16BIT")
+  string "Byte Select access type (16-bit data bus only)"
+  range SMC_BAT
+  default "BAT_BYTE_SELECT"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PMEN_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  bool "Enable external Memory Page mode?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_PS_CS3
+  depends on SMC_MODE_CS3_REGISTER && SYS_MEMORY_SMC_PMEN_CS3
+  string "External Memory Page Size"
+  range SMC_PAGE_SIZE
+  default "SMC_MODE_PS_4_BYTE"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_TDF_MODE_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  bool "Enable Optimization of the TDF wait states?"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_TDF_CYCLES_CS3
+  depends on SMC_MODE_CS3_REGISTER && SYS_MEMORY_SMC_TDF_MODE_CS3
+  int "Data Float Time (nb of cycles)"
+  range 0 15
+  default 0
+  ---help---
+  ---endhelp---
+
+
+  config SYS_MEMORY_SMC_NWAIT_MODE_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  string "NWAIT Mode Configuration"
+  range SMC_NWAIT_MODE
+  default "NWAIT_DISABLED_MODE"
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_WRITE_MODE_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  bool "Enable Write Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+
+  config SYS_MEMORY_SMC_READ_MODE_CS3
+  depends on SMC_MODE_CS3_REGISTER
+  bool "Enable Read Mode Configuration"
+  default 0
+  ---help---
+  ---endhelp---
+  endmenu
+#SMC Mode Settings end menu
+
+endmenu
+# SMC CS3 timings
+
+endmenu
+#SMC Chip Select Selection and Settings end menu
+endmenu
+#SMC Configuration end
+
+ifblock USE_SYS_MEMORY_SMC
+
+template SYS_MEMORY_SMC_H_FTL "$HARMONY_VERSION_PATH/framework/system/memory/smc_pic32c/config/sys_memory_smc.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/system/memory/smc_pic32c/sys_memory_smc.h"
+template SYS_MEMORY_SMC_STATIC_H_FTL "$HARMONY_VERSION_PATH/framework/system/memory/smc_pic32c/templates/sys_memory_smc_static.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/system/memory/smc_pic32c/src/sys_memory_smc_static.h"
+template SYS_MEMORY_SMC_C_FTL "$HARMONY_VERSION_PATH/framework/system/memory/smc_pic32c/templates/sys_memory_smc_static.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/framework/system/memory/smc_pic32c/src/sys_memory_smc_static.c"
+
+endif

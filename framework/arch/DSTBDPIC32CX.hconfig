@@ -1,0 +1,10 @@
+# file: DSTBDPIC32CX.hconfig
+
+# config for the whole product family
+config ARCH_DSTBDPIC32CX
+  bool
+  select ARCH_ARM_CORTEX_M4
+  select DEVICE_HAS_MPU
+  select DEVICE_HAS_FPU
+  select DEVICE_HAS_FPU_FPV4_SP_D16 if PROJECT_USES_FPU
+  select DEVICE_HAS_CORE_TIMER

@@ -1,0 +1,1 @@
+source "$HARMONY_VERSION_PATH/framework/driver/sqi/config/qspi_pic32c.hconfig"

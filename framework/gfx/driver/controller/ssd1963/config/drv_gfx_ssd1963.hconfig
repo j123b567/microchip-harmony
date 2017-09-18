@@ -1,0 +1,7 @@
+ifblock DRV_GFX_CONTROLLER_TYPE = "SSD1963"
+
+template DRV_GFX_SSD1963_H "$HARMONY_VERSION_PATH/framework/gfx/driver/controller/ssd1963/templates/drv_gfx_ssd1963.h.ftl" to "$PROJECT_HEADER_FILES/app/system_config/$CONFIGURATION/framework/gfx/driver/controller/ssd1963/drv_gfx_ssd1963.h"
+
+template DRV_GFX_SSD1963_C "$HARMONY_VERSION_PATH/framework/gfx/driver/controller/ssd1963/templates/drv_gfx_ssd1963.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/framework/gfx/driver/controller/ssd1963/drv_gfx_ssd1963.c"
+
+endif

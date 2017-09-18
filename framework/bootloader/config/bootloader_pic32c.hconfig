@@ -1,0 +1,144 @@
+
+#############################################################################################
+# ENUM Options
+#############################################################################################
+enum BOOTLOADER_TYPES
+    "USART"
+    || "USB_HOST"
+    || "SD_CARD"
+
+################################################################
+
+menu "Bootloader Library"
+
+config USE_BOOTLOADER
+    bool "Use Bootloader Library?"
+    default n
+
+config BOOTLOADER_TYPE 
+    string "Bootloader Type"
+    default "USART"
+    range BOOTLOADER_TYPES
+    depends on USE_BOOTLOADER
+
+choice
+prompt "Bootloader or Application?" 
+
+default CUSTOM_BOOTLOADER_PROGRAM_SPACE
+depends on USE_BOOTLOADER
+config CUSTOM_BOOTLOADER_PROGRAM_SPACE
+     bool "Build an Application Linker Script?" 
+          ---help---
+     This creates a linker script file (.ld) with program memory region outside that of the bootloader. This file will be added to your project so that the application can be programmed via a bootloader.
+     ---endhelp---
+
+config USE_BOOTLOADER_LIBRARY
+    bool "Build a Bootloader?"
+    select USE_BSP_NEEDED
+    ---help---
+    This adds the proper files to a project to setup an application as a bootloader. This creates a linker script file (.ld) with program memory region inside that of the bootloader region. The program will then be ready to act as a bootloader accepting a program with that of the "application linker script".
+    ---endhelp---
+
+endchoice
+
+config DATASTREAM_USART_USED
+    bool
+    depends on USE_BOOTLOADER_LIBRARY
+    default y if BOOTLOADER_TYPE = "USART"
+    select BSP_USART_BRIDGE_NEEDED
+    select USE_DRV_USART_NEEDED
+    select USE_DRV_USART_STATIC_NEEDED
+    select DRV_USART_BYTE_MODEL_CALLBACK
+    set DRV_USART_BYTE_MODEL_BLOCKING to n if USE_DRV_USART_NEEDED
+    set DRV_USART_PERIPHERAL_ID_IDX0 to "USART_ID_1" if USE_DRV_USART_NEEDED
+    set DRV_USART_BAUD_RATE_IDX0 to 115200 if USE_DRV_USART_NEEDED
+    select USE_SYS_RESET_NEEDED
+
+config DATASTREAM_USBHOST_USED
+    bool
+    depends on USE_BOOTLOADER_LIBRARY
+    default y if BOOTLOADER_TYPE = "USB_HOST"
+    select USE_USB_STACK_NEEDED
+    select DRV_USB_HOST_SUPPORT_NEEDED
+    select USB_HOST_USE_MSD
+    select USE_SYS_RESET_NEEDED
+
+comment "Make sure USB Host is setup properly in MHC. msd_basic demo config can be used for reference"
+     depends on DATASTREAM_USBHOST_USED
+     
+config DATASTREAM_SDCARD_USED
+    bool
+    depends on USE_BOOTLOADER_LIBRARY
+    default y if BOOTLOADER_TYPE = "SD_CARD"
+    select DRV_SDHC_NEEDED if HAVE_SDHC
+    select DRV_SDCARD_NEEDED if !HAVE_SDHC
+    select USE_SYS_RESET_NEEDED
+
+ifblock BOOTLOADER_TYPE = "USB_HOST" || BOOTLOADER_TYPE = "SD_CARD"
+    config BOOTLOADER_IMAGE_FILENAME
+        string "File name to load from drive"
+        default "image.hex"
+        depends on USE_BOOTLOADER_LIBRARY
+endif
+
+config BOOTLOADER_SIZE
+    hex "Bootloader size"
+    depends on USE_BOOTLOADER
+    default 0x4000 if BOOTLOADER_TYPE = "USART"
+    range 0x4000 0x1fffff if BOOTLOADER_TYPE = "USART"
+    default 0x14000 if BOOTLOADER_TYPE = "USB_HOST" || BOOTLOADER_TYPE = "SD_CARD"
+    range 0x14000 0x1fffff if BOOTLOADER_TYPE = "USB_HOST" || BOOTLOADER_TYPE = "SD_CARD"
+
+comment "Size must align on 0x4000 boundaries. For Application Linker script, value should be equal to the size of bootloader."
+    depends on USE_BOOTLOADER
+endmenu
+
+source "$HARMONY_VERSION_PATH/framework/bootloader/config/bootloader_legacy_pic32c.hconfig"
+
+ifblock (USE_BOOTLOADER_LIBRARY)
+    ###################################Bootloader Linker Script########################################
+    template BOOTLOADER_LINKER_LD1 "$HARMONY_VERSION_PATH/framework/bootloader/templates/btl_cz.ld.ftl" to "$PROJECT_LINKER_FILES/system_config/$CONFIGURATION/btl_cz.ld"
+
+    ifblock CUSTOM_BOOTLOADER_PROGRAM_SPACE = n
+        add "<#include \"/framework/bootloader/templates/bootloader_init_data_pic32c.c.ftl\">"  to list SYSTEM_INIT_C_MODULE_INITIALIZATION_DATA
+        add "<#include \"/framework/bootloader/templates/bootloader_config_pic32c.h.ftl\">"  to list SYSTEM_CONFIG_H_MIDDLEWARE_CONFIGURATION 
+        add "<#include \"/framework/bootloader/templates/bootloader_init.c.ftl\">"  to list SYSTEM_INIT_C_INITIALIZE_MIDDLEWARE
+        add "<#include \"/framework/bootloader/templates/bootloader_tasks.c.ftl\">"  to list SYSTEM_TASKS_C_CALL_LIB_TASKS
+        add "<#include \"/framework/bootloader/templates/bootloader_app_callback_func.c.ftl\">"  to list APP0_C_CALLBACK_FUNCTIONS
+        add "<#include \"/framework/bootloader/templates/bootloader_app_initialize.c.ftl\">"  to list APP0_C_INITIALIZE
+        add "<#include \"/framework/bootloader/templates/bootloader_app_service_tasks.c.ftl\">"  to list APP0_C_TASKS_STATE_SERVICE_TASKS
+    endif
+endif
+
+ifblock (CUSTOM_BOOTLOADER_PROGRAM_SPACE)
+    ###################################Application Linker Script########################################
+    template BOOTLOADER_LINKER_LD2 "$HARMONY_VERSION_PATH/framework/bootloader/templates/btl_cz.ld.ftl" to "$PROJECT_LINKER_FILES/system_config/$CONFIGURATION/app_cz.ld"
+endif
+
+ifblock (USE_BOOTLOADER_LIBRARY)
+
+    ####################################Bootloader Source Files########################################
+    file BOOTLOADER_H "$HARMONY_VERSION_PATH/framework/bootloader/src/bootloader.h" to "$PROJECT_HEADER_FILES/framework/bootloader/src/bootloader.h"
+    file BOOTLOADER_C "$HARMONY_VERSION_PATH/framework/bootloader/src/bootloader_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/bootloader/src/bootloader_pic32c.c"
+    file BOOTLOADER_NVM_H "$HARMONY_VERSION_PATH/framework/bootloader/src/nvm.h" to "$PROJECT_HEADER_FILES/framework/bootloader/src/nvm.h"
+    file BOOTLOADER_NVM_C "$HARMONY_VERSION_PATH/framework/bootloader/src/nvm_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/bootloader/src/nvm_pic32c.c"
+
+    ####################################DataStream Files########################################
+    file BOOTLOADER_DATASTREAM_H "$HARMONY_VERSION_PATH/framework/bootloader/src/datastream.h" to "$PROJECT_HEADER_FILES/framework/bootloader/src/datastream.h"
+
+    ifblock BOOTLOADER_TYPE != "USB_HOST"  && BOOTLOADER_TYPE != "SD_CARD"
+        file BOOTLOADER_DATASTREAM_C "$HARMONY_VERSION_PATH/framework/bootloader/src/datastream/datastream_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/bootloader/src/datastream/datastream_pic32c.c"
+    endif
+    ifblock BOOTLOADER_TYPE = "USB_HOST"  || BOOTLOADER_TYPE = "SD_CARD"
+        file BOOTLOADER_SYS_FS_H "$HARMONY_VERSION_PATH/framework/system/fs/sys_fs.h" to "$PROJECT_HEADER_FILES/framework/system/fs/sys_fs.h"
+        ifblock BOOTLOADER_TYPE = "USB_HOST"
+            file BOOTLOADER_DRIVERUSBH_C "$HARMONY_VERSION_PATH/framework/bootloader/src/datastream/datastream_usb_host_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/bootloader/src/datastream/datastream_usb_host_pic32c.c"
+        endif
+        ifblock BOOTLOADER_TYPE = "SD_CARD"
+            file BOOTLOADER_DRIVERSDCARD_C "$HARMONY_VERSION_PATH/framework/bootloader/src/datastream/datastream_sdcard_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/bootloader/src/datastream/datastream_sdcard_pic32c.c"
+        endif
+    endif
+    ifblock BOOTLOADER_TYPE = "USART"
+        file BOOTLOADER_DRIVERUSART_C "$HARMONY_VERSION_PATH/framework/bootloader/src/datastream/datastream_usart_pic32c.c" to "$PROJECT_SOURCE_FILES/framework/bootloader/src/datastream/datastream_usart_pic32c.c"
+    endif
+endif

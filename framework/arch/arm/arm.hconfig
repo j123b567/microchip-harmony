@@ -1,0 +1,54 @@
+# file: arm.hconfig
+# included by arch.hconfig only if ARCH_ARM
+
+file DEVICES_PIC32C_H         "$HARMONY_VERSION_PATH/framework/arch/arm/devices_pic32c.h"            to "$PROJECT_HEADER_FILES/framework/arch/arm/devices_pic32c.h"
+
+# these files bring what is needed exactly to bootstrap any pic32c
+template STARTUP_PIC32C_C     "$HARMONY_VERSION_PATH/framework/arch/arm/templates/system_startup.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/system_startup.c"
+file SYSTEM_PIC32C_H          "$HARMONY_VERSION_PATH/framework/arch/arm/system_pic32c.h"                to "$PROJECT_HEADER_FILES/framework/arch/arm/system_pic32c.h"
+template SYSTEM_PIC32C_C      "$HARMONY_VERSION_PATH/framework/arch/arm/templates/system_pic32c.c.ftl"  to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/system_pic32c.c"
+
+# do we add default Cortex-M7 MPU configuration?
+ifblock PROJECT_USES_MPU
+    file SYSTEM_PIC32C_MPU_H    "$HARMONY_VERSION_PATH/framework/arch/arm/arm_cm_mpu.h"                    to "$PROJECT_HEADER_FILES/framework/arch/arm/arm_cm_mpu.h"
+    file SYSTEM_PIC32C_MPU_C    "$HARMONY_VERSION_PATH/framework/arch/arm/arm_cm_mpu.c"                    to "$PROJECT_SOURCE_FILES/framework/arch/arm/arm_cm_mpu.c"
+    template SYSTEM_CORE_MPU_C  "$HARMONY_VERSION_PATH/framework/arch/arm/templates/system_core_mpu.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/system_core_mpu.c"
+endif
+
+# do we embed custom syscalls?
+ifblock XC32_SYSCALLS_BASIC || XC32_SYSCALLS_EXTENDED
+    template SYSCALLS_PIC32C_C  "$HARMONY_VERSION_PATH/framework/arch/arm/templates/newlib_syscalls_pic32c.c.ftl" to "$PROJECT_SOURCE_FILES/app/system_config/$CONFIGURATION/newlib_syscalls_pic32c.c"
+endif
+
+template PIC32C_FLASH_LD      "$HARMONY_VERSION_PATH/framework/arch/arm/templates/device_v7m.ld.ftl" to "$PROJECT_LINKER_FILES/app/default.ld"
+
+compiler DFP_INCLUDE includepath "$HARMONY_VERSION_PATH/packs/pic32c_dfp"
+compiler CMSIS_INCLUDE includepath "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include"
+
+#
+# add files for specific Cortex-M architectures
+#
+
+file CMSIS_COMPILER_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/cmsis_compiler.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/cmsis_compiler.h"
+file CMSIS_GCC_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/cmsis_gcc.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/cmsis_gcc.h"
+
+# tz_context.h is related to TrustZone-M
+file CMSIS_CONTEXT_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Core/Include/tz_context.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/Core/Include/tz_context.h"
+
+ifblock USE_DSP
+    file CMSIS_COMMON_TABLES_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/DSP/Include/arm_common_tables.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/DSP/Include/arm_common_tables.h"
+    file CMSIS_CONST_STRUCTS_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/DSP/Include/arm_const_structs.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/DSP/Include/arm_const_structs.h"
+    file CMSIS_MATH_H "$HARMONY_VERSION_PATH/packs/arm/CMSIS/DSP/Include/arm_math.h" to "$PROJECT_HEADER_FILES/packs/arm/CMSIS/DSP/Include/arm_math.h"
+endif
+
+ifblock ARCH_ARM_CORTEX_M0PLUS
+    source "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m0plus/devices_cortex_m0plus.hconfig"
+endif
+
+ifblock ARCH_ARM_CORTEX_M4
+    source "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m4/devices_cortex_m4.hconfig"
+endif
+
+ifblock ARCH_ARM_CORTEX_M7
+    source "$HARMONY_VERSION_PATH/framework/arch/arm/devices_cortex_m7/devices_cortex_m7.hconfig"
+endif

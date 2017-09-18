@@ -1,0 +1,62 @@
+menu "CMSIS DSP_Lib Fixed-Point Math Library Configuration"
+    
+config USE_CMSIS_DSP_LIB
+    bool "Use CMSIS DSP Math Library?"
+    depends on ARCH_ARM
+    default n
+    ---help---
+    IDH_HTML_BTLIB_CMSIS_DSP_LIB_INTRODUCTION
+    ---endhelp---
+
+endmenu
+
+
+#framework/math/CMSIS/Include/cmsis_armcc.h
+#framework/math/CMSIS/Include/cmsis_armcc_V6.h
+#framework/math/CMSIS/Include/cmsis_gcc.h
+#framework/math/CMSIS/Include/cmsis_gcc_pic32.h
+#framework/math/CMSIS/Include/core_cm0.h
+#framework/math/CMSIS/Include/core_cm0plus.h
+#framework/math/CMSIS/Include/core_cm3.h
+#framework/math/CMSIS/Include/core_cm4.h
+#framework/math/CMSIS/Include/core_cm7.h
+#framework/math/CMSIS/Include/core_cmFunc.h
+#framework/math/CMSIS/Include/core_cmInstr.h
+#framework/math/CMSIS/Include/core_cmSimd.h
+#framework/math/CMSIS/Include/core_pic32mx.h
+#framework/math/CMSIS/Include/core_sc000.h
+#framework/math/CMSIS/Include/core_sc300.h
+
+#PIC32 CMSIS DSP Library
+# TODO:
+ifblock USE_CMSIS_DSP_LIB
+
+ifblock (PIC32MX || PIC32MZ)
+
+file CMSIS_DSP_INC_MX "$HARMONY_VERSION_PATH/framework/math/CMSIS/DSP/Include/arm_math_pic32mx.h" to "$PROJECT_HEADER_FILES/framework/math/CMSIS/DSP/Include/arm_math_pic32mx.h"
+
+library CMSIS_DSP_LIB_MX "$HARMONY_VERSION_PATH/bin/framework/math/cmsis/dsp/libmips_pic32MX_dsp.a"
+
+compiler CMSIS_DSP_LIB_INCLUDE_A includepath "$HARMONY_VERSION_PATH/framework/math/CMSIS/DSP/Include"
+
+endif
+
+
+#ARM M7 CMSIS DSP Library
+ifblock ARCH_ARM
+
+file CMSIS_DSP_INC_ARM            "$HARMONY_VERSION_PATH/packs/arm/cmsis/DSP/Include/arm_math.h"          to "$PROJECT_HEADER_FILES/packs/arm/cmsis/DSP/Include/arm_math.h"
+file CMSIS_DSP_TABLES_ARM_H       "$HARMONY_VERSION_PATH/packs/arm/cmsis/DSP/Include/arm_common_tables.h" to "$PROJECT_HEADER_FILES/packs/arm/cmsis/DSP/Include/arm_common_tables.h"
+file CMSIS_DSP_STRUCTS_ARM_H      "$HARMONY_VERSION_PATH/packs/arm/cmsis/DSP/Include/arm_const_structs.h" to "$PROJECT_HEADER_FILES/packs/arm/cmsis/DSP/Include/arm_const_structs.h"
+file CMSIS_CORE_INCLUDE_ARM_GCC_H "$HARMONY_VERSION_PATH/packs/arm/cmsis/Core/Include/cmsis_gcc.h"        to "$PROJECT_HEADER_FILES/packs/arm/cmsis/Core/Include/cmsis_gcc.h"
+
+library CMSIS_DSP_LIB_ARM  "$HARMONY_VERSION_PATH/packs/arm/CMSIS/Lib/GCC/arm_cortexM7l_math.lib"
+
+compiler CMSIS_CORE_INCLUDE includepath "$HARMONY_VERSION_PATH/packs/arm/cmsis/Core/Include"
+compiler CMSIS_DSP_INCLUDE  includepath "$HARMONY_VERSION_PATH/packs/arm/cmsis/DSP/Include"
+
+#ARCH_ARM
+endif
+
+#USE_CMSIS_DSP_LIB
+endif
