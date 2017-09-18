@@ -1055,7 +1055,7 @@ static void _DRV_ETHPHY_SetupPhaseDetect(DRV_ETHPHY_CLIENT_OBJ * hClientObj)
             // ok, reset bit is low
             // try to see if we can write smth to the PHY
             // we use BMCON::Loopback and Isolate bits
-            _DRV_PHY_SMIWriteStart(hClientObj, PHY_REG_BMCON, _BMCON_LOOPBACK_MASK|_BMCON_ISOLATE_MASK);
+            _DRV_PHY_SMIWriteStart(hClientObj, PHY_REG_BMCON, _BMCON_LOOPBACK_MASK/*|_BMCON_ISOLATE_MASK*/);
             _DRV_PHY_SetOperPhase(hClientObj, DRV_ETHPHY_SETUP_PHASE_DETECT, 2);
             break;
 
@@ -1067,13 +1067,13 @@ static void _DRV_ETHPHY_SetupPhaseDetect(DRV_ETHPHY_CLIENT_OBJ * hClientObj)
 
         case 3:
             bmcon.w = hClientObj->smiData;
-            if( (bmcon.LOOPBACK == 0) || (bmcon.ISOLATE == 0) )
+            if( (bmcon.LOOPBACK == 0) /*|| (bmcon.ISOLATE == 0)*/ )
             {   // failed to set
                  _DRV_PHY_SetOperDoneResult(hClientObj, DRV_ETHPHY_RES_DTCT_ERR);
             }
             else
             {   // clear bits and write
-                _DRV_PHY_SMIWriteStart(hClientObj, PHY_REG_BMCON, bmcon.w ^ (_BMCON_LOOPBACK_MASK|_BMCON_ISOLATE_MASK));
+                _DRV_PHY_SMIWriteStart(hClientObj, PHY_REG_BMCON, bmcon.w ^ (_BMCON_LOOPBACK_MASK/*|_BMCON_ISOLATE_MASK*/));
                 _DRV_PHY_SetOperPhase(hClientObj, DRV_ETHPHY_SETUP_PHASE_DETECT, 4);
             }
             break;
@@ -1085,7 +1085,7 @@ static void _DRV_ETHPHY_SetupPhaseDetect(DRV_ETHPHY_CLIENT_OBJ * hClientObj)
 
         case 5:
             bmcon.w = hClientObj->smiData;
-            if(bmcon.LOOPBACK || bmcon.ISOLATE)
+            if(bmcon.LOOPBACK /*|| bmcon.ISOLATE*/)
             {   // failed to clear
                 _DRV_PHY_SetOperDoneResult(hClientObj, DRV_ETHPHY_RES_DTCT_ERR);
             }
