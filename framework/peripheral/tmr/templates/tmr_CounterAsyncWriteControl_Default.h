@@ -118,7 +118,7 @@ PLIB_TEMPLATE bool TMR_ExistsCounterAsyncWriteControl_Default( TMR_MODULE_ID ind
     }
     else
     {
-        PLIB_ASSERT(false, "This Timer instance does not support CounterAsyncWrite feature");
+        //PLIB_ASSERT(false, "This Timer instance does not support CounterAsyncWrite feature");
         return false;
     }
 }

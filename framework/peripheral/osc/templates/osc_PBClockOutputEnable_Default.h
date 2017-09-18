@@ -81,7 +81,7 @@ PLIB_TEMPLATE void OSC_PBOutputClockEnable_Default( OSC_MODULE_ID index , OSC_PE
 
     if (peripheralBusNumber == OSC_PERIPHERAL_BUS_1)
     {
-        PLIB_ASSERT(false, "Peripheral Bus 1 is always enabled by default");
+        //PLIB_ASSERT(false, "Peripheral Bus 1 is always enabled by default");
     }
     else
     {

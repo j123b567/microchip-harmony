@@ -63,7 +63,7 @@ PLIB_TEMPLATE void ETH_HashTableSet_Default( ETH_MODULE_ID index , uint64_t hash
 {
     
 	volatile eth_registers_t * eth = ((eth_registers_t *)(index));
-	PLIB_ASSERT(((!eth->ETHCON1.RXEN)|| (!eth->ETHRXFC,HTEN)),
+	PLIB_ASSERT(((!eth->ETHCON1.RXEN)|| (!eth->ETHRXFC.HTEN)),
                 "Receive must be disabled or Hash Table turned off!");
 		
 	eth->ETHHT0SET = _ETHHT0_HTLOWER_MASK & ((uint32_t)hashTableValue);

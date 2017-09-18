@@ -68,7 +68,7 @@ PLIB_TEMPLATE void TMR_Mode16BitEnable_Default( TMR_MODULE_ID index )
     }
     else
     {
-        PLIB_ASSERT(false, "Other timers are by default in 16 bit mode");
+        //PLIB_ASSERT(false, "Other timers are by default in 16 bit mode");
     }
 }
 
