@@ -74,9 +74,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 /* Individual Peripheral Library Interface Headers 
 */
 
-#include "peripheral/adc/plib_adc.h"        // Only on PIC32MX devices
-#include "peripheral/adcp/plib_adcp.h"      // Only on PIC32MZ EC series devices
-#include "peripheral/adchs/plib_adchs.h"     // Only on PIC32MZ EF series devices
+//#include "peripheral/adc/plib_adc.h"        // Only on PIC32MX devices
+//#include "peripheral/adcp/plib_adcp.h"      // Only on PIC32MZ EC series devices
+//#include "peripheral/adchs/plib_adchs.h"     // Only on PIC32MZ EF series devices
 #include "peripheral/bmx/plib_bmx.h"        // Only on PIC32MX devices
 #include "peripheral/can/plib_can.h"
 #include "peripheral/cdac/plib_cdac.h"
