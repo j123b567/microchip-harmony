@@ -1520,7 +1520,7 @@ static bool _TCPv4Flush(TCB_STUB * pSkt, IPV4_PACKET* pv4Pkt, uint16_t hdrLen, u
     }
     // failed
     pv4Pkt->macPkt.pktFlags &= ~TCPIP_MAC_PKT_FLAG_QUEUED;
-    TCPIP_PKT_FlightLogAcknowledge(&pv4Pkt->macPkt, TCPIP_THIS_MODULE_ID, TCPIP_MAC_PKT_ACK_IP_REJECT_ERR);
+    TCPIP_PKT_PacketAcknowledge(&pv4Pkt->macPkt, TCPIP_MAC_PKT_ACK_IP_REJECT_ERR);
 
     return false;
 }
@@ -3723,6 +3723,7 @@ static _TCP_SEND_RES _TcpSend(TCB_STUB* pSkt, uint8_t vTCPFlags, uint8_t vSendFl
                 {   // client socket at 1st connect
                     if(!_TcpSocketSetSourceInterface(pSkt))
                     {   // cannot find an route?
+                        TCPIP_PKT_PacketAcknowledge(&((TCP_V4_PACKET*)pSendPkt)->v4Pkt.macPkt, TCPIP_MAC_PKT_ACK_IP_REJECT_ERR);
                         return _TCP_SEND_NO_IF;
                     }
                 }
